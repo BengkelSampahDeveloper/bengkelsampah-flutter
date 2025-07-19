@@ -1,0 +1,35 @@
+{
+    "name": "Bengkel Sampah",
+    "short_name": "Bengkel Sampah",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0FB7A6",
+    "theme_color": "#0FB7A6",
+    "description": "Aplikasi pengelolaan sampah yang membantu masyarakat dalam mendaur ulang dan mengelola sampah dengan lebih baik.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
