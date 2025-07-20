@@ -361,7 +361,7 @@ class _HomeContentState extends State<HomeContent> {
                                             ),
                                           ),
                                           Text(
-                                            '$poin Poin',
+                                            '${NumberFormatter.formatSimpleNumber(poin)} Poin',
                                             style: const TextStyle(
                                               fontSize: 14,
                                               fontFamily: 'Poppins',

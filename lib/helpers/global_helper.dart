@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:intl/intl.dart';
 
 class GlobalIdentifierManager {
   static final GlobalIdentifierManager _instance =
@@ -87,5 +88,59 @@ class GlobalIdentifierManager {
   void dispose() {
     identifierNotifier.dispose();
     nameNotifier.dispose();
+  }
+}
+
+// Number formatting helper
+class NumberFormatter {
+  static String formatNumber(dynamic number) {
+    try {
+      if (number == null) return '0';
+
+      // Convert to double for formatting
+      double numValue;
+      if (number is String) {
+        numValue = double.tryParse(number) ?? 0.0;
+      } else if (number is int) {
+        numValue = number.toDouble();
+      } else if (number is double) {
+        numValue = number;
+      } else {
+        numValue = 0.0;
+      }
+
+      // Format with locale (Indonesian format: 123,456.78)
+      final formatter = NumberFormat('#,##0.00', 'en_US');
+      return formatter.format(numValue);
+    } catch (e) {
+      debugPrint('Error formatting number: $e');
+      return '0';
+    }
+  }
+
+  // Simple number formatting without decimal places for home and profile screens
+  static String formatSimpleNumber(dynamic number) {
+    try {
+      if (number == null) return '0';
+
+      // Convert to double for formatting
+      double numValue;
+      if (number is String) {
+        numValue = double.tryParse(number) ?? 0.0;
+      } else if (number is int) {
+        numValue = number.toDouble();
+      } else if (number is double) {
+        numValue = number;
+      } else {
+        numValue = 0.0;
+      }
+
+      // Format with locale without decimal places (Indonesian format: 123,456)
+      final formatter = NumberFormat('#,##0', 'en_US');
+      return formatter.format(numValue);
+    } catch (e) {
+      debugPrint('Error formatting simple number: $e');
+      return '0';
+    }
   }
 }

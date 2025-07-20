@@ -263,7 +263,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Text(poin,
+                                                Text(
+                                                    NumberFormatter
+                                                        .formatSimpleNumber(
+                                                            poin),
                                                     style: const TextStyle(
                                                       fontSize: 12,
                                                       fontFamily: 'Poppins',

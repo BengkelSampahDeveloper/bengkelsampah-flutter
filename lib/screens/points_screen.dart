@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../providers/points_provider.dart';
 import '../helpers/dialog_helper.dart';
+import '../helpers/global_helper.dart';
 import '../models/point_history_model.dart';
 import 'package:intl/intl.dart';
 
@@ -372,7 +373,7 @@ class _PointsScreenState extends State<PointsScreen> {
                                                     ),
                                                     const SizedBox(width: 7),
                                                     Text(
-                                                      "$poin Poin",
+                                                      "${NumberFormatter.formatNumber(poin)} Poin",
                                                       style: const TextStyle(
                                                         fontSize: 26,
                                                         fontFamily: 'Poppins',
@@ -554,7 +555,7 @@ class _PointsScreenState extends State<PointsScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '${history.jumlahPoint}',
+                    NumberFormatter.formatNumber(history.jumlahPoint),
                     style: TextStyle(
                       fontSize: 14,
                       fontFamily: 'Poppins',
