@@ -1,6 +1,7 @@
 import 'package:bengkelsampah_app/helpers/dialog_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../providers/bank_sampah_provider.dart';
 import '../constants/app_colors.dart';
 
@@ -15,6 +16,40 @@ class _BankSampahScreenState extends State<BankSampahScreen> {
   @override
   void initState() {
     super.initState();
+  }
+
+  // Function to open Google Maps
+  Future<void> _openGoogleMaps(String? gmapsLink) async {
+    if (gmapsLink == null || gmapsLink.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Link Google Maps tidak tersedia'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    try {
+      final Uri url = Uri.parse(gmapsLink);
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Tidak dapat membuka Google Maps'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -256,6 +291,7 @@ class _BankSampahScreenState extends State<BankSampahScreen> {
                         ),
                         const SizedBox(height: 8),
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Icon(
                               Icons.location_on_outlined,
@@ -275,6 +311,55 @@ class _BankSampahScreenState extends State<BankSampahScreen> {
                             ),
                           ],
                         ),
+                        if (bankSampah.gmapsLink != null &&
+                            bankSampah.gmapsLink!.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Row(
+                              children: [
+                                const SizedBox(
+                                    width: 20), // Align with text above
+                                GestureDetector(
+                                  onTap: () =>
+                                      _openGoogleMaps(bankSampah.gmapsLink),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.color_0FB7A6
+                                          .withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: AppColors.color_0FB7A6
+                                            .withValues(alpha: 0.3),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Icons.map_outlined,
+                                          size: 14,
+                                          color: AppColors.color_0FB7A6,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'Buka di Maps',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.color_0FB7A6,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         const SizedBox(height: 8),
                         Row(
                           children: [

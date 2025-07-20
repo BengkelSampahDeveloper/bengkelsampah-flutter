@@ -7,6 +7,7 @@ class BankSampahModel {
   final String kontakPenanggungJawab;
   final String? foto;
   final String tipeLayanan;
+  final String? gmapsLink;
 
   BankSampahModel({
     required this.id,
@@ -17,6 +18,7 @@ class BankSampahModel {
     required this.kontakPenanggungJawab,
     this.foto,
     required this.tipeLayanan,
+    this.gmapsLink,
   });
 
   factory BankSampahModel.fromJson(Map<String, dynamic> json) {
@@ -29,6 +31,7 @@ class BankSampahModel {
       kontakPenanggungJawab: json['kontak_penanggung_jawab'] ?? '',
       foto: json['foto'],
       tipeLayanan: json['tipe_layanan'] ?? 'tempat',
+      gmapsLink: json['gmaps_link'],
     );
   }
 
@@ -42,6 +45,7 @@ class BankSampahModel {
       'kontak_penanggung_jawab': kontakPenanggungJawab,
       'foto': foto,
       'tipe_layanan': tipeLayanan,
+      'gmaps_link': gmapsLink,
     };
   }
 
