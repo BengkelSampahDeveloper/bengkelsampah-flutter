@@ -7,6 +7,9 @@ import '../helpers/dialog_helper.dart';
 import '../models/sampah_detail_model.dart';
 import '../providers/pilahku_provider.dart';
 import '../screens/add_to_pilahku_screen.dart';
+import 'dart:ui';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class KatalogDetailScreen extends StatefulWidget {
   final int sampahId;
@@ -395,7 +398,7 @@ class _KatalogDetailScreenState extends State<KatalogDetailScreen>
                                                             .start,
                                                     children: [
                                                       Text(
-                                                        'Harga di Berbagai Cabang',
+                                                        'Pilihan Berbagai Cabang',
                                                         style: TextStyle(
                                                           fontSize: 12,
                                                           fontFamily: 'Poppins',
@@ -407,7 +410,7 @@ class _KatalogDetailScreenState extends State<KatalogDetailScreen>
                                                       ),
                                                       SizedBox(height: 2),
                                                       Text(
-                                                        'Pilih cabang terdekat untuk harga terbaik',
+                                                        'Silahkan tentukan cabang terdekat kamu',
                                                         style: TextStyle(
                                                           fontSize: 10,
                                                           fontFamily: 'Poppins',
@@ -468,18 +471,10 @@ class _KatalogDetailScreenState extends State<KatalogDetailScreen>
                                               .map((entry) {
                                             final index = entry.key;
                                             final price = entry.value;
-                                            // Find the highest price to mark as "best"
-                                            final maxPrice = provider.prices
-                                                .map((p) => p.harga)
-                                                .reduce(
-                                                    (a, b) => a > b ? a : b);
-                                            final isBestPrice =
-                                                price.harga == maxPrice;
                                             return _buildImprovedPriceCard(
                                                 price,
                                                 index,
-                                                sampah.satuan,
-                                                isBestPrice);
+                                                sampah.satuan);
                                           }).toList(),
                                         ],
                                       ),
@@ -503,7 +498,7 @@ class _KatalogDetailScreenState extends State<KatalogDetailScreen>
   }
 
   Widget _buildImprovedPriceCard(
-      PriceModel price, int index, String satuan, bool isBestPrice) {
+      PriceModel price, int index, String satuan) {
     final sampah = context.read<KatalogDetailProvider>().selectedSampah;
     if (sampah == null) return const SizedBox.shrink();
 
@@ -526,16 +521,12 @@ class _KatalogDetailScreenState extends State<KatalogDetailScreen>
                   color: AppColors.color_FFFFFF,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: isBestPrice
-                        ? AppColors.color_0FB7A6
-                        : AppColors.color_E9E9E9,
-                    width: isBestPrice ? 2 : 1,
+                    color: AppColors.color_E9E9E9,
+                    width: 1,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: isBestPrice
-                          ? AppColors.color_0FB7A6.withValues(alpha: 0.1)
-                          : Colors.black.withValues(alpha: 0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -637,96 +628,9 @@ class _KatalogDetailScreenState extends State<KatalogDetailScreen>
                         ],
                       ),
                     ),
-
-                    const SizedBox(width: 12),
-
-                    // Price Section with enhanced styling
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        gradient: AppColors.gradient1,
-                        borderRadius: BorderRadius.circular(6),
-                        boxShadow: [
-                          BoxShadow(
-                            color:
-                                AppColors.color_0FB7A6.withValues(alpha: 0.2),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Point Icon
-                          SvgPicture.asset(
-                            'assets/images/ic_point.svg',
-                            width: 11,
-                            height: 11,
-                          ),
-
-                          const SizedBox(width: 6),
-
-                          // Price Text
-                          Text(
-                            '${price.harga.toInt()} / $satuan',
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.color_FFFFFF,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),
-
-              // Best Price Badge
-              if (isBestPrice)
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppColors.color_FFAB2A,
-                      borderRadius: const BorderRadius.only(
-                          topRight: Radius.circular(10),
-                          bottomLeft: Radius.circular(10)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.color_FFAB2A.withValues(alpha: 0.3),
-                          blurRadius: 4,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.star,
-                          color: AppColors.color_FFFFFF,
-                          size: 10,
-                        ),
-                        Text(
-                          'Terbaik',
-                          style: TextStyle(
-                            fontSize: 9,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.color_FFFFFF,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
             ],
           ),
         ),

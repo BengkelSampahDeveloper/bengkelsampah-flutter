@@ -7,6 +7,7 @@ import '../models/pilahku_model.dart';
 import '../widgets/custom_buttons.dart';
 import '../screens/detail_setoran_screen.dart';
 import '../helpers/dialog_helper.dart';
+import '../helpers/global_helper.dart';
 
 class PilahkuScreen extends StatefulWidget {
   const PilahkuScreen({Key? key}) : super(key: key);
@@ -184,7 +185,7 @@ class _PilahkuScreenState extends State<PilahkuScreen> {
             ),
             const SizedBox(width: 4),
             Text(
-              '${value.toInt()}',
+              '${NumberFormatter.formatSimpleNumber(value)}',
               style: const TextStyle(
                 fontSize: 20,
                 fontFamily: 'Poppins',
@@ -655,7 +656,7 @@ class _PilahkuScreenState extends State<PilahkuScreen> {
             const SizedBox(width: 6),
             Flexible(
               child: Text(
-                '${item.totalHarga.toInt()} Poin',
+                '${NumberFormatter.formatSimpleNumber(item.totalHarga)} Poin',
                 style: TextStyle(
                   fontSize: 15,
                   fontFamily: 'Poppins',
@@ -793,7 +794,7 @@ class _PilahkuScreenState extends State<PilahkuScreen> {
         const SizedBox(width: 4),
         Expanded(
           child: Text(
-            '${item.hargaPerSatuan.toInt()} Poin x ${item.estimasiBerat.toStringAsFixed(1)} ${item.sampahSatuan.isNotEmpty ? item.sampahSatuan : 'Kg'}',
+            '${NumberFormatter.formatSimpleNumber(item.hargaPerSatuan)} Poin x ${item.estimasiBerat.toStringAsFixed(1)} ${item.sampahSatuan.isNotEmpty ? item.sampahSatuan : 'Kg'}',
             style: TextStyle(
               fontSize: 12,
               fontFamily: 'Poppins',
@@ -981,7 +982,7 @@ class _PilahkuScreenState extends State<PilahkuScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '${totals['price'].toInt()} Poin',
+                    '${NumberFormatter.formatSimpleNumber(totals['price'])} Poin',
                     style: const TextStyle(
                       fontSize: 14,
                       fontFamily: 'Poppins',
@@ -1494,7 +1495,7 @@ class _PilahkuScreenState extends State<PilahkuScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '${item.hargaPerSatuan.toInt()} Poin',
+                    '${NumberFormatter.formatSimpleNumber(item.hargaPerSatuan)} Poin',
                     style: const TextStyle(
                       fontSize: 14,
                       fontFamily: 'Poppins',
@@ -1518,7 +1519,7 @@ class _PilahkuScreenState extends State<PilahkuScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '${item.totalHarga.toInt()} Poin',
+                    '${NumberFormatter.formatSimpleNumber(item.totalHarga)} Poin',
                     style: const TextStyle(
                       fontSize: 14,
                       fontFamily: 'Poppins',

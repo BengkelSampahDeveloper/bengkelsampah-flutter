@@ -512,7 +512,7 @@ class _KatalogScreenState extends State<KatalogScreen> {
                     const Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          "Cek Harga >",
+                          "Cek Detail >",
                           style: TextStyle(
                             fontSize: 10,
                             fontFamily: 'Poppins',

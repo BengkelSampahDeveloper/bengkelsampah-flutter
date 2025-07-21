@@ -15,6 +15,7 @@ import '../providers/pilahku_provider.dart';
 import '../helpers/dialog_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:typed_data';
+import '../helpers/global_helper.dart';
 
 enum TipeSetor { jual, sedekah, tabung }
 
@@ -1081,7 +1082,7 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
                 _buildSummaryRow('Total Item', '$totalItems item'),
                 _buildSummaryRow(
                     'Estimasi Berat', '${totalWeight.toStringAsFixed(1)} kg'),
-                _buildSummaryRow('Estimasi Total', '${totalPrice.toInt()} Poin',
+                _buildSummaryRow('Estimasi Total', '${NumberFormatter.formatSimpleNumber(totalPrice)} Poin',
                     isTotal: true),
                 const SizedBox(height: 8),
                 _buildTipeSetorSummary(),
@@ -1117,7 +1118,7 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
               ),
               const SizedBox(width: 6),
               Text(
-                'Estimasi cash: ${totalPrice.toInt()} Poin',
+                'Estimasi cash: ${NumberFormatter.formatSimpleNumber(totalPrice)} Poin',
                 style: const TextStyle(
                   fontSize: 12,
                   fontFamily: 'Poppins',
@@ -1173,7 +1174,7 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
               ),
               const SizedBox(width: 6),
               Text(
-                'Estimasi poin: ${totalPrice.toInt()} Poin',
+                'Estimasi poin: ${NumberFormatter.formatSimpleNumber(totalPrice)} Poin',
                 style: const TextStyle(
                   fontSize: 12,
                   fontFamily: 'Poppins',
@@ -1324,7 +1325,7 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
             const SizedBox(width: 6),
             Flexible(
               child: Text(
-                '${item.totalHarga.toInt()} Poin',
+                '${NumberFormatter.formatSimpleNumber(item.totalHarga)} Poin',
                 style: const TextStyle(
                   fontSize: 15,
                   fontFamily: 'Poppins',
@@ -1352,7 +1353,7 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
         const SizedBox(width: 4),
         Expanded(
           child: Text(
-            '${item.hargaPerSatuan.toInt()} Poin x ${item.estimasiBerat.toStringAsFixed(1)} ${item.sampahSatuan.isNotEmpty ? item.sampahSatuan : 'Kg'}',
+            '${NumberFormatter.formatSimpleNumber(item.hargaPerSatuan)} Poin x ${item.estimasiBerat.toStringAsFixed(1)} ${item.sampahSatuan.isNotEmpty ? item.sampahSatuan : 'Kg'}',
             style: const TextStyle(
               fontSize: 12,
               fontFamily: 'Poppins',
@@ -1585,7 +1586,7 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Anda akan mendapatkan uang cash sebesar ${totalPrice.toInt()} Poin (setara dengan estimasi nilai sampah)',
+                  'Anda akan mendapatkan uang cash sebesar ${NumberFormatter.formatSimpleNumber(totalPrice)} Poin (setara dengan estimasi nilai sampah)',
                   style: const TextStyle(
                     fontSize: 12,
                     fontFamily: 'Poppins',
@@ -1649,7 +1650,7 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Anda akan mendapatkan ${totalPrice.toInt()} Poin yang dapat digunakan untuk transaksi di aplikasi',
+                  'Anda akan mendapatkan ${NumberFormatter.formatSimpleNumber(totalPrice)} Poin yang dapat digunakan untuk transaksi di aplikasi',
                   style: const TextStyle(
                     fontSize: 12,
                     fontFamily: 'Poppins',

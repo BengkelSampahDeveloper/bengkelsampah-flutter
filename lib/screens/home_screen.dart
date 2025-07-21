@@ -20,6 +20,7 @@ import 'package:bengkelsampah_app/screens/pilahku_screen.dart';
 import 'package:bengkelsampah_app/screens/notification_screen.dart';
 import 'package:bengkelsampah_app/widgets/custom_bottom_navigation.dart';
 import 'package:bengkelsampah_app/services/version_service.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 // Wrapper for TransaksiScreen that handles automatic refresh
 class TransaksiScreenWrapper extends StatefulWidget {
@@ -33,11 +34,6 @@ class _TransaksiScreenWrapperState extends State<TransaksiScreenWrapper> {
   @override
   void initState() {
     super.initState();
-    // Remove automatic refresh - let TransaksiScreen handle its own data loading
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   final provider = context.read<SetoranProvider>();
-    //   provider.forceRefresh();
-    // });
   }
 
   @override
@@ -70,16 +66,6 @@ class HomeScreen extends StatelessWidget {
               onItemTapped: (index) {
                 navigationProvider.markScreenAsInitialized(index);
                 navigationProvider.setIndex(index);
-
-                // Remove automatic refresh on navigation
-                // Let each screen handle its own data loading
-                // if (index == 2) {
-                //   // Transaksi screen index
-                //   WidgetsBinding.instance.addPostFrameCallback((_) {
-                //     final provider = context.read<SetoranProvider>();
-                //     provider.forceRefresh();
-                //   });
-                // }
               },
             ),
           );
@@ -103,6 +89,12 @@ class _HomeContentState extends State<HomeContent> {
   void initState() {
     super.initState();
     _identifierManager.loadIdentifier();
+  }
+
+  String _formatEventDate(String startDatetime, String endDatetime) {
+    final start = DateTime.parse(startDatetime);
+    final end = DateTime.parse(endDatetime);
+    return '${DateFormat('dd MMMM yyyy', 'id_ID').format(start)} - ${DateFormat('dd MMMM yyyy', 'id_ID').format(end)}';
   }
 
   @override
@@ -169,46 +161,170 @@ class _HomeContentState extends State<HomeContent> {
               physics: const AlwaysScrollableScrollPhysics(),
               child: Stack(
                 children: [
+                  // BEGIN: Event Carousel Section
                   Positioned(
                     top: 0,
                     left: 0,
                     right: 0,
-                    child: Container(
+                    child: SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * 0.26,
-                      decoration: const BoxDecoration(
-                        gradient: AppColors.gradient1,
+                      height: MediaQuery.of(context).size.height * 0.32,
+                      child: Builder(
+                        builder: (context) {
+                          final events = provider.events;
+                          if (events.isEmpty) {
+                            // Placeholder with app logo
+                            return Center(
+                              child: Image.asset(
+                                'assets/images/big_logo.webp',
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Image.asset(
+                                  'assets/images/big_logo.webp',
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            );
+                          }
+                          return Stack(
+                            children: [
+                              CarouselSlider.builder(
+                                itemCount: events.length,
+                                itemBuilder: (context, index, realIdx) {
+                                  final event = events[index];
+                                  final cover = (event.cover.isNotEmpty)
+                                      ? event.cover
+                                      : 'assets/images/big_logo.webp';
+                                  final isNetwork = event.cover.isNotEmpty &&
+                                      (event.cover.startsWith('http') ||
+                                          event.cover.startsWith('https'));
+                                  return Container(
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                    ),
+                                    child: Stack(
+                                      fit: StackFit.expand,
+                                      children: [
+                                        isNetwork
+                                            ? Image.network(
+                                                cover,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error,
+                                                        stackTrace) =>
+                                                    Image.asset(
+                                                  'assets/images/big_logo.webp',
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              )
+                                            : Image.asset(
+                                                cover,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error,
+                                                        stackTrace) =>
+                                                    Image.asset(
+                                                  'assets/images/big_logo.webp',
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                        // Gradasi hitam bawah untuk teks event
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                              colors: [
+                                                Colors.transparent,
+                                                Colors.black.withOpacity(0.6),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                          left: 24,
+                                          right: 24,
+                                          bottom: 24,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                event.title,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'Poppins',
+                                                ),
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                _formatEventDate(
+                                                    event.startDatetime,
+                                                    event.endDatetime),
+                                                style: const TextStyle(
+                                                  color: Colors.white70,
+                                                  fontSize: 13,
+                                                  fontFamily: 'Poppins',
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                options: CarouselOptions(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.32,
+                                  viewportFraction: 1.0, // Full width
+                                  enlargeCenterPage: false,
+                                  autoPlay: true,
+                                  autoPlayInterval: const Duration(seconds: 5),
+                                ),
+                              ),
+                              // Overlay gradasi hitam dari atas screen sampai 3dp di bawah nama user (sekitar 90px)
+                              Positioned(
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                child: Container(
+                                  height:
+                                      90, // Atur sesuai kebutuhan, 90px dari atas
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Colors.black87,
+                                        Colors.black54,
+                                        Colors.transparent,
+                                      ],
+                                      stops: [0.0, 0.7, 1.0],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: Image.asset(
-                      'assets/images/ic_home_bg.webp',
-                      width: MediaQuery.of(context).size.width,
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * 0.26,
-                      decoration: BoxDecoration(
-                        gradient: AppColors.gradient4,
-                      ),
-                    ),
-                  ),
+                  // END: Event Carousel Section
                   SafeArea(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 42),
+                          const SizedBox(height: 22),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -309,7 +425,7 @@ class _HomeContentState extends State<HomeContent> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 33),
+                          const SizedBox(height: 165),
                           Container(
                             width: double.infinity,
                             decoration: const BoxDecoration(

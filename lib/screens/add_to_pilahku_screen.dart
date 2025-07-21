@@ -426,28 +426,6 @@ class _AddToPilahkuScreenState extends State<AddToPilahkuScreen> {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          SvgPicture.asset(
-                            'assets/images/ic_poin_inverse.svg',
-                            width: 12,
-                            height: 12,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${price.harga.toInt()} Poin / $satuan',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w600,
-                              color: isSelected
-                                  ? AppColors.color_0FB7A6
-                                  : AppColors.color_6F6F6F,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
                           Icon(
                             price.tipeLayananIcon,
                             size: 12,
@@ -488,10 +466,10 @@ class _AddToPilahkuScreenState extends State<AddToPilahkuScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.color_0FB7A6.withValues(alpha: 0.1),
+              color: AppColors.color_0FB7A6.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: AppColors.color_0FB7A6.withValues(alpha: 0.3),
+                color: AppColors.color_0FB7A6.withOpacity(0.3),
                 width: 1,
               ),
             ),
@@ -503,49 +481,13 @@ class _AddToPilahkuScreenState extends State<AddToPilahkuScreen> {
                   size: 20,
                 ),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Text(
-                            'Estimasi Total:',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.color_0FB7A6,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          SvgPicture.asset(
-                            'assets/images/ic_poin_inverse.svg',
-                            width: 16,
-                            height: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${(weight * _selectedPrice!).toInt()} Poin',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.color_0FB7A6,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        'Estimasi Berat: $weight ${sampah.satuan}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.color_6F6F6F,
-                        ),
-                      ),
-                    ],
+                Text(
+                  'Estimasi Berat: $weight ${sampah.satuan}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.color_0FB7A6,
                   ),
                 ),
               ],
