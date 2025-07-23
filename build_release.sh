@@ -1,31 +1,40 @@
 #!/bin/bash
+set -e
 
-echo "🚀 Starting Bengkel Sampah Release Build Process..."
+# Get version from pubspec.yaml
+echo "Membaca versi dari pubspec.yaml..."
+VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+if [ -z "$VERSION" ]; then
+  echo "Gagal membaca versi dari pubspec.yaml!"
+  exit 1
+fi
+APPNAME="bengkelsampah_app"
 
-# Clean the project
-echo "🧹 Cleaning project..."
-flutter clean
+# Build web
 
-# Get dependencies
-echo "📦 Getting dependencies..."
-flutter pub get
+echo "\n=== Build Web Release ==="
+flutter build web --release
+WEB_OUT="${APPNAME}_${VERSION}_web.zip"
+cd build/web && zip -r "../$WEB_OUT" . && cd ../..
+echo "Web build selesai: build/$WEB_OUT"
 
-# Build release APK
-echo "🔨 Building release APK..."
+# Build APK
+
+echo "\n=== Build APK Release ==="
 flutter build apk --release
+APK_OUT="${APPNAME}_${VERSION}.apk"
+cp build/app/outputs/flutter-apk/app-release.apk "build/$APK_OUT"
+echo "APK build selesai: build/$APK_OUT"
 
-# Build App Bundle (recommended for Play Store)
-echo "📦 Building App Bundle..."
+# Build App Bundle (AAB)
+
+echo "\n=== Build App Bundle (AAB) Release ==="
 flutter build appbundle --release
+AAB_OUT="${APPNAME}_${VERSION}.aab"
+cp build/app/outputs/bundle/release/app-release.aab "build/$AAB_OUT"
+echo "AAB build selesai: build/$AAB_OUT"
 
-echo "✅ Build completed!"
-echo ""
-echo "📱 Files generated:"
-echo "   - APK: build/app/outputs/flutter-apk/app-release.apk"
-echo "   - App Bundle: build/app/outputs/bundle/release/app-release.aab"
-echo ""
-echo "📋 Next steps:"
-echo "   1. Test the APK on a device"
-echo "   2. Upload the .aab file to Google Play Console"
-echo "   3. Fill in store listing information"
-echo "   4. Submit for review" 
+echo "\n=== Semua build selesai ==="
+echo "- Web:    build/$WEB_OUT"
+echo "- APK:    build/$APK_OUT"
+echo "- AAB:    build/$AAB_OUT" 

@@ -83,7 +83,7 @@ class TermsConditionsScreen extends StatelessWidget {
                   '8. Kontak',
                   'Untuk pertanyaan terkait syarat dan ketentuan, silakan hubungi kami melalui:\n\n'
                       'Email: support@bengkelsampah.com\n'
-                      'Telepon: (021) 1234-5678',
+                      'Telepon: (+62) 821 6823 1808',
                 ),
                 const SizedBox(height: 20),
               ],
