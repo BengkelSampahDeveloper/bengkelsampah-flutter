@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:universal_platform/universal_platform.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import '../constants/app_colors.dart';
 import '../providers/address_provider.dart';
@@ -13,9 +10,10 @@ import '../widgets/custom_buttons.dart';
 import '../providers/setoran_provider.dart';
 import '../providers/pilahku_provider.dart';
 import '../helpers/dialog_helper.dart';
-import 'package:file_picker/file_picker.dart';
 import 'dart:typed_data';
 import '../helpers/global_helper.dart';
+import '../helpers/image_picker_helper.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 enum TipeSetor { jual, sedekah, tabung }
 
@@ -38,7 +36,6 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   TipeSetor selectedTipeSetor = TipeSetor.tabung; // Default to tabung
-  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -47,6 +44,14 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadAddresses();
     });
+  }
+
+  @override
+  void dispose() {
+    // Clean up resources
+    selectedImage = null;
+    webImageBytes = null;
+    super.dispose();
   }
 
   Future<void> _loadAddresses() async {
@@ -123,9 +128,9 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
                   color: AppColors.color_6F6F6F,
                 ),
               ),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
-                _takePhotoFromCamera();
+                await _takePhotoFromCamera();
               },
             ),
             ListTile(
@@ -158,9 +163,9 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
                   color: AppColors.color_6F6F6F,
                 ),
               ),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
-                _pickImageFromGallery();
+                await _pickImageFromGallery();
               },
             ),
             const SizedBox(height: 20),
@@ -171,133 +176,56 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
   }
 
   Future<void> _takePhotoFromCamera() async {
+    if (!mounted) return;
+
     try {
-      // Check if running on web
       if (UniversalPlatform.isWeb) {
-        final result =
-            await FilePicker.platform.pickFiles(type: FileType.image);
-        if (result != null && result.files.single.bytes != null) {
+        final bytes = await ImagePickerHelper.getWebImageBytes(context);
+        if (bytes != null && mounted) {
           setState(() {
-            webImageBytes = result.files.single.bytes;
+            webImageBytes = bytes;
             selectedImage = null;
           });
         }
         return;
       }
 
-      // For mobile platforms, handle permissions
-      PermissionStatus cameraStatus = await Permission.camera.status;
-
-      if (cameraStatus.isDenied) {
-        cameraStatus = await Permission.camera.request();
-      }
-
-      if (cameraStatus.isPermanentlyDenied) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                  'Izin kamera diperlukan. Silakan aktifkan di pengaturan aplikasi.'),
-              backgroundColor: AppColors.color_F44336,
-            ),
-          );
-        }
-        return;
-      }
-
-      if (cameraStatus.isGranted) {
-        final XFile? image = await _picker.pickImage(
-          source: ImageSource.camera,
-          imageQuality: 80,
-        );
-        if (image != null) {
-          setState(() {
-            selectedImage = File(image.path);
-          });
-        }
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Izin kamera ditolak'),
-              backgroundColor: AppColors.color_F44336,
-            ),
-          );
-        }
+      final file = await ImagePickerHelper.pickImageFromCamera(context);
+      if (file != null && mounted) {
+        setState(() {
+          selectedImage = file;
+          webImageBytes = null;
+        });
       }
     } catch (e) {
-      // Handle permission denied or other errors
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Tidak dapat mengakses kamera: ${e.toString()}'),
-            backgroundColor: AppColors.color_F44336,
-          ),
-        );
-      }
+      debugPrint('Camera error: $e');
     }
   }
 
   Future<void> _pickImageFromGallery() async {
+    if (!mounted) return;
+
     try {
       if (UniversalPlatform.isWeb) {
-        final result =
-            await FilePicker.platform.pickFiles(type: FileType.image);
-        if (result != null && result.files.single.bytes != null) {
+        final bytes = await ImagePickerHelper.getWebImageBytes(context);
+        if (bytes != null && mounted) {
           setState(() {
-            webImageBytes = result.files.single.bytes;
+            webImageBytes = bytes;
             selectedImage = null;
           });
         }
         return;
       }
-      // Request permission (Android 13+ pakai READ_MEDIA_IMAGES, sebelumnya pakai photos)
-      PermissionStatus status;
-      if (Platform.isAndroid) {
-        status = await Permission.storage.request();
-        if (await Permission.mediaLibrary.isGranted) {
-          status = await Permission.mediaLibrary.request();
-        }
-      } else {
-        status = await Permission.photos.request();
-      }
-      if (!status.isGranted) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Izin galeri diperlukan')),
-          );
-        }
-        return;
-      }
 
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
+      final file = await ImagePickerHelper.pickImageFromGallery(context);
+      if (file != null && mounted) {
         setState(() {
-          selectedImage = File(image.path);
-        });
-        return;
-      }
-      // Jika gagal, fallback ke file_picker
-      final result = await FilePicker.platform.pickFiles(type: FileType.image);
-      if (result != null && result.files.single.path != null) {
-        setState(() {
-          selectedImage = File(result.files.single.path!);
+          selectedImage = file;
+          webImageBytes = null;
         });
       }
     } catch (e) {
-      // Fallback ke file_picker jika error
-      final result = await FilePicker.platform.pickFiles(type: FileType.image);
-      if (result != null && result.files.single.path != null) {
-        setState(() {
-          selectedImage = File(result.files.single.path!);
-        });
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Gagal mengambil foto: $e')),
-          );
-        }
-      }
+      debugPrint('Gallery error: $e');
     }
   }
 
@@ -1082,7 +1010,8 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
                 _buildSummaryRow('Total Item', '$totalItems item'),
                 _buildSummaryRow(
                     'Estimasi Berat', '${totalWeight.toStringAsFixed(1)} kg'),
-                _buildSummaryRow('Estimasi Total', '${NumberFormatter.formatSimpleNumber(totalPrice)} Poin',
+                _buildSummaryRow('Estimasi Total',
+                    '${NumberFormatter.formatSimpleNumber(totalPrice)} Poin',
                     isTotal: true),
                 const SizedBox(height: 8),
                 _buildTipeSetorSummary(),

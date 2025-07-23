@@ -91,36 +91,46 @@ class _PointsScreenState extends State<PointsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.color_F6F7FB,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          final Uri url = Uri.parse(
-              'https://wa.me/6282168231808?text=Halo%2C%20saya%20ingin%20bertanya%20terkait%20Bengkel%20Sampah.');
-          if (await canLaunchUrl(url)) {
-            await launchUrl(url, mode: LaunchMode.externalApplication);
-          } else {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Tidak dapat membuka link WhatsApp'),
-                  backgroundColor: AppColors.color_FFAB2A,
-                ),
-              );
+      floatingActionButton: Container(
+        width: 120,
+        height: 35,
+        child: FloatingActionButton(
+          onPressed: () async {
+            final Uri url = Uri.parse(
+                'https://wa.me/6282168231808?text=Halo%2C%20saya%20ingin%20bertanya%20terkait%20Bengkel%20Sampah.');
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url, mode: LaunchMode.externalApplication);
+            } else {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Tidak dapat membuka link WhatsApp'),
+                    backgroundColor: AppColors.color_FFAB2A,
+                  ),
+                );
+              }
             }
-          }
-        },
-        backgroundColor: AppColors.color_0FB7A6,
-        icon: const Icon(
-          Icons.chat,
-          color: AppColors.color_FFFFFF,
-          size: 24,
-        ),
-        label: const Text(
-          'Redeem',
-          style: TextStyle(
-            fontSize: 14,
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w600,
-            color: AppColors.color_FFFFFF,
+          },
+          backgroundColor: AppColors.color_0FB7A6,
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.chat,
+                color: AppColors.color_FFFFFF,
+                size: 18,
+              ),
+              SizedBox(width: 4),
+              Text(
+                'Tukar poin',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.color_FFFFFF,
+                ),
+              ),
+            ],
           ),
         ),
       ),
