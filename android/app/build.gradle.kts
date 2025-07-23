@@ -20,7 +20,7 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "com.bengkelsampah.app"
     compileSdk = 36  // Updated to meet plugin requirements
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"  // Updated to meet plugin requirements
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
