@@ -56,6 +56,7 @@ class _AddToPilahkuScreenState extends State<AddToPilahkuScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.color_F8FAFB,
       body: Consumer2<KatalogDetailProvider, PilahkuProvider>(
         builder: (context, katalogProvider, pilahkuProvider, _) {

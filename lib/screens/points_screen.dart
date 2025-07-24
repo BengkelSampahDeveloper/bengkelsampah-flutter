@@ -98,9 +98,9 @@ class _PointsScreenState extends State<PointsScreen> {
           onPressed: () async {
             final Uri url = Uri.parse(
                 'https://wa.me/6282168231808?text=Halo%2C%20saya%20ingin%20bertanya%20terkait%20Bengkel%20Sampah.');
-            if (await canLaunchUrl(url)) {
+            try {
               await launchUrl(url, mode: LaunchMode.externalApplication);
-            } else {
+            } catch (e) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
