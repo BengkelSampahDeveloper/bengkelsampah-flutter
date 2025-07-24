@@ -102,6 +102,8 @@ class ImagePickerHelper {
         // Verify file exists and is accessible
         final file = File(image.path);
         if (await file.exists()) {
+          // Add small delay to ensure file is fully written
+          await Future.delayed(const Duration(milliseconds: 200));
           return file;
         } else {
           debugPrint('Camera image file not found: ${image.path}');
@@ -155,6 +157,8 @@ class ImagePickerHelper {
         // Verify file exists and is accessible
         final file = File(image.path);
         if (await file.exists()) {
+          // Add small delay to ensure file is fully accessible
+          await Future.delayed(const Duration(milliseconds: 100));
           return file;
         } else {
           debugPrint('Gallery image file not found: ${image.path}');
@@ -213,14 +217,17 @@ class ImagePickerHelper {
 
   /// Show error snackbar
   static void _showErrorSnackBar(BuildContext context, String message) {
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: AppColors.color_F44336,
-        ),
-      );
-    }
+    // Add delay to ensure context is stable after navigation
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: AppColors.color_FFAB2A,
+          ),
+        );
+      }
+    });
   }
 
   /// Get image bytes for web platform

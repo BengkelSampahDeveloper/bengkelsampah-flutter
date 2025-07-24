@@ -190,15 +190,33 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
         return;
       }
 
+      // Store context before async operation
+      final currentContext = context;
+
       final file = await ImagePickerHelper.pickImageFromCamera(context);
-      if (file != null && mounted) {
-        setState(() {
-          selectedImage = file;
-          webImageBytes = null;
-        });
+
+      // Double check if widget is still mounted and context is valid
+      if (file != null && mounted && currentContext.mounted) {
+        // Add small delay to ensure UI is ready
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        if (mounted && currentContext.mounted) {
+          setState(() {
+            selectedImage = file;
+            webImageBytes = null;
+          });
+        }
       }
     } catch (e) {
       debugPrint('Camera error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal mengambil foto: ${e.toString()}'),
+            backgroundColor: AppColors.color_FFAB2A,
+          ),
+        );
+      }
     }
   }
 
@@ -217,15 +235,33 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
         return;
       }
 
+      // Store context before async operation
+      final currentContext = context;
+
       final file = await ImagePickerHelper.pickImageFromGallery(context);
-      if (file != null && mounted) {
-        setState(() {
-          selectedImage = file;
-          webImageBytes = null;
-        });
+
+      // Double check if widget is still mounted and context is valid
+      if (file != null && mounted && currentContext.mounted) {
+        // Add small delay to ensure UI is ready
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        if (mounted && currentContext.mounted) {
+          setState(() {
+            selectedImage = file;
+            webImageBytes = null;
+          });
+        }
       }
     } catch (e) {
       debugPrint('Gallery error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal memilih foto: ${e.toString()}'),
+            backgroundColor: AppColors.color_FFAB2A,
+          ),
+        );
+      }
     }
   }
 
