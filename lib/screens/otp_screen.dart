@@ -16,10 +16,11 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _otpController = TextEditingController();
+  String _otpValue = ''; // Gunakan String instead of controller
   int _resendCooldown = 0;
   bool _canResend = true;
   Timer? _timer;
+  bool _disposed = false;
 
   @override
   void initState() {
@@ -29,19 +30,29 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   void dispose() {
-    _otpController.dispose();
+    _disposed = true;
     _timer?.cancel();
+    _timer = null;
     super.dispose();
   }
 
   void _startResendCooldown() {
-    setState(() {
-      _resendCooldown = 60;
-      _canResend = false;
-    });
+    if (_disposed || !mounted) return;
+
+    if (mounted) {
+      setState(() {
+        _resendCooldown = 60;
+        _canResend = false;
+      });
+    }
 
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_disposed || !mounted) {
+        timer.cancel();
+        return;
+      }
+
       if (mounted) {
         setState(() {
           if (_resendCooldown > 0) {
@@ -51,18 +62,16 @@ class _OtpScreenState extends State<OtpScreen> {
             timer.cancel();
           }
         });
-      } else {
-        timer.cancel();
       }
     });
   }
 
   Future<void> _handleResendOtp() async {
-    if (!_canResend) return;
+    if (!_canResend || _disposed || !mounted) return;
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    if (mounted) {
+    if (mounted && !_disposed) {
       DialogHelper.showLoadingDialog(
         context,
         message: 'Memproses pendaftaran...',
@@ -74,16 +83,16 @@ class _OtpScreenState extends State<OtpScreen> {
       authProvider.currentType!,
     );
 
-    if (mounted) {
+    if (mounted && !_disposed) {
       Navigator.pop(context);
     }
 
-    if (success && mounted) {
+    if (success && mounted && !_disposed) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('OTP berhasil dikirim ulang')),
       );
       _startResendCooldown();
-    } else if (mounted && authProvider.error != null) {
+    } else if (mounted && !_disposed && authProvider.error != null) {
       DialogHelper.showErrorDialog(
         context,
         message: authProvider.error!,
@@ -93,23 +102,25 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   Future<void> _handleSubmit() async {
+    if (_disposed || !mounted) return;
+
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-      if (mounted) {
+      if (mounted && !_disposed) {
         DialogHelper.showLoadingDialog(
           context,
           message: 'Memproses pendaftaran...',
         );
       }
 
-      final success = await authProvider.handleOtp(_otpController.text);
+      final success = await authProvider.handleOtp(_otpValue);
 
-      if (mounted) {
+      if (mounted && !_disposed) {
         Navigator.pop(context);
       }
 
-      if (success && mounted) {
+      if (success && mounted && !_disposed) {
         if (authProvider.currentType == 'forgot') {
           authProvider.clearCurrentData();
           ScaffoldMessenger.of(context).showSnackBar(
@@ -126,7 +137,7 @@ class _OtpScreenState extends State<OtpScreen> {
           authProvider.clearCurrentData();
           Navigator.pushReplacementNamed(context, '/home');
         }
-      } else if (mounted && authProvider.error != null) {
+      } else if (mounted && !_disposed && authProvider.error != null) {
         DialogHelper.showErrorDialog(
           context,
           message: authProvider.error!,
@@ -137,6 +148,8 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   String _getMessage() {
+    if (_disposed || !mounted) return '';
+
     final authProvider = Provider.of<AuthProvider>(context);
     final identifier = authProvider.currentIdentifier ?? '';
     final type = authProvider.currentType ?? '';
@@ -161,6 +174,10 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_disposed) {
+      return const SizedBox.shrink();
+    }
+
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
@@ -201,7 +218,6 @@ class _OtpScreenState extends State<OtpScreen> {
                 PinCodeTextField(
                   appContext: context,
                   length: 6,
-                  controller: _otpController,
                   keyboardType: TextInputType.number,
                   cursorColor: Colors.transparent,
                   autoFocus: true,
@@ -227,12 +243,21 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                   enableActiveFill: true,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  onChanged: (value) {},
-                  onCompleted: (value) =>
-                      authProvider.isLoading ? null : _handleSubmit(),
+                  onChanged: (value) {
+                    if (!_disposed && mounted) {
+                      _otpValue = value;
+                    }
+                  },
+                  onCompleted: (value) {
+                    if (!_disposed && mounted && !authProvider.isLoading) {
+                      _otpValue = value;
+                      _handleSubmit();
+                    }
+                  },
                 ),
                 TextButton(
-                  onPressed: _canResend ? _handleResendOtp : null,
+                  onPressed:
+                      (_canResend && !_disposed) ? _handleResendOtp : null,
                   child: RichText(
                     text: TextSpan(
                       children: [

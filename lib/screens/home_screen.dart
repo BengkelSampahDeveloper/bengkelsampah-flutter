@@ -21,6 +21,7 @@ import 'package:bengkelsampah_app/screens/notification_screen.dart';
 import 'package:bengkelsampah_app/widgets/custom_bottom_navigation.dart';
 import 'package:bengkelsampah_app/services/version_service.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 // Wrapper for TransaksiScreen that handles automatic refresh
 class TransaksiScreenWrapper extends StatefulWidget {
@@ -167,8 +168,8 @@ class _HomeContentState extends State<HomeContent> {
                     left: 0,
                     right: 0,
                     child: SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * 0.32,
+                      height: MediaQuery.of(context).size.height *
+                          0.35, // Kembali ke perhitungan asli
                       child: Builder(
                         builder: (context) {
                           final events = provider.events;
@@ -282,7 +283,7 @@ class _HomeContentState extends State<HomeContent> {
                                 },
                                 options: CarouselOptions(
                                   height:
-                                      MediaQuery.of(context).size.height * 0.32,
+                                      double.infinity, // Gunakan tinggi parent
                                   viewportFraction: 1.0, // Full width
                                   enlargeCenterPage: false,
                                   autoPlay: true,
@@ -317,14 +318,15 @@ class _HomeContentState extends State<HomeContent> {
                       ),
                     ),
                   ),
-                  // END: Event Carousel Section
-                  SafeArea(
+                  Positioned(
+                    top: 40,
+                    left: 0,
+                    right: 0,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 22),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -425,7 +427,24 @@ class _HomeContentState extends State<HomeContent> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 165),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // END: Event Carousel Section
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: UniversalPlatform.isWeb
+                                ? MediaQuery.of(context).size.height * 0.33
+                                : (MediaQuery.of(context).size.height * 0.33) -
+                                    (MediaQuery.of(context).padding.top +
+                                        MediaQuery.of(context).padding.bottom),
+                          ),
                           Container(
                             width: double.infinity,
                             decoration: const BoxDecoration(
