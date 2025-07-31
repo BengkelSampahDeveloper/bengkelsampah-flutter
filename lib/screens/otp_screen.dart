@@ -135,7 +135,10 @@ class _OtpScreenState extends State<OtpScreen> {
           );
         } else {
           authProvider.clearCurrentData();
-          Navigator.pushReplacementNamed(context, '/home');
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/home',
+            (route) => false, // Hapus semua screen sebelumnya
+          );
         }
       } else if (mounted && !_disposed && authProvider.error != null) {
         DialogHelper.showErrorDialog(
