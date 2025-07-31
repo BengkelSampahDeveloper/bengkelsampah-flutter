@@ -36,9 +36,16 @@ import 'package:universal_platform/universal_platform.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'services/firebase_messaging_service.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Lock orientation to portrait only
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   // Initialize Firebase
   await Firebase.initializeApp(
@@ -79,6 +86,8 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Bengkel Sampah',
           debugShowCheckedModeBanner: false,
+          // Prevent app from being killed when configuration changes occur
+          restorationScopeId: 'bengkelsampah_app',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(
               seedColor: AppColors.color_008B8B,
