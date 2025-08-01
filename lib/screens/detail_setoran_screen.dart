@@ -12,7 +12,7 @@ import '../providers/pilahku_provider.dart';
 import '../helpers/dialog_helper.dart';
 import 'dart:typed_data';
 import '../helpers/global_helper.dart';
-import '../helpers/image_picker_helper.dart';
+import '../helpers/custom_camera_helper.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 enum TipeSetor { jual, sedekah, tabung }
@@ -180,7 +180,7 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
 
     try {
       if (UniversalPlatform.isWeb) {
-        final bytes = await ImagePickerHelper.getWebImageBytes(context);
+        final bytes = await CustomCameraHelper.getWebImageBytes(context);
         if (bytes != null && mounted) {
           setState(() {
             webImageBytes = bytes;
@@ -193,7 +193,7 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
       // Store context before async operation
       final currentContext = context;
 
-      final file = await ImagePickerHelper.pickImageFromCamera(context);
+      final file = await CustomCameraHelper.showCustomCamera(context);
 
       // Double check if widget is still mounted and context is valid
       if (file != null && mounted && currentContext.mounted) {
@@ -225,7 +225,7 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
 
     try {
       if (UniversalPlatform.isWeb) {
-        final bytes = await ImagePickerHelper.getWebImageBytes(context);
+        final bytes = await CustomCameraHelper.getWebImageBytes(context);
         if (bytes != null && mounted) {
           setState(() {
             webImageBytes = bytes;
@@ -238,7 +238,7 @@ class _DetailSetoranScreenState extends State<DetailSetoranScreen> {
       // Store context before async operation
       final currentContext = context;
 
-      final file = await ImagePickerHelper.pickImageFromGallery(context);
+      final file = await CustomCameraHelper.pickImageFromGallery(context);
 
       // Double check if widget is still mounted and context is valid
       if (file != null && mounted && currentContext.mounted) {

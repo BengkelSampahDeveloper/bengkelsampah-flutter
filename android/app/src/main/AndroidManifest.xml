@@ -11,18 +11,14 @@
     
     <!-- Storage permissions for Android < 13 (API level 33) -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" 
-        android:maxSdkVersion="32" />
+        android:maxSdkVersion="32" 
+        tools:replace="android:maxSdkVersion" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" 
-        android:maxSdkVersion="32" />
+        android:maxSdkVersion="32" 
+        tools:replace="android:maxSdkVersion" />
     
     <!-- Storage permissions for Android >= 13 (API level 33) -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    
-    <!-- Legacy permissions for older Android versions -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" 
-        android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" 
-        android:maxSdkVersion="32" />
     
     <application
         android:label="Bengkel Sampah"
